@@ -12,11 +12,11 @@ vector = {
     angleBetween = function(self, other)
         dotProduct = self:dotProduct(other)
 
-        return math.acos(dotProduct/(self.length()*other.length()))
+        return math.acos(dotProduct/(#self * #other))
     end,
 
     crossProduct = function(self, other)
-        -- to be implemented
+        return #self * #other * math.sin(self:angleBetween(other))
     end,
 
     ------ OVERRIDES ------
@@ -41,7 +41,7 @@ vector = {
     end,
 
     __len = function(self)
-        return (self.x*self.x + self.y*self.y + self.z*self.z) ^ 0.5
+        return math.sqrt(self.x*self.x + self.y*self.y + self.z*self.z)
     end,
 
     __eq = function(self, other)
@@ -73,7 +73,7 @@ vector = {
     end,
 
     new = function(x, y, z)
-        local new = setmetatable({}, vector)
+        local new = table.copy(vector)
 
         new.x = x
         new.y = y
@@ -91,7 +91,7 @@ line = {
     v = vector.new(0, 0, 0), -- direction vector
 
     new = function(point1, point2)
-        local new = setmetatable({}, line)
+        local new = table.copy(line)
 
         new.r = point1
         new.v = point2 - point1
@@ -106,10 +106,17 @@ line = {
 }
 
 plane = {
-    -- the origin is the center point of the plane
-    -- the vector facing outward from the plane
-    -- the normal dotted with any point on the plane is 0
+    -- three point representation of plane
 
-    origin = vector.new(0,0,0),
-    normal = vector.new(0,0,0)
+    points = {vector.new(0,0,0), vector.new(1,0,0), vector.new(0,1,0)},
+
+    normal = vector.new(0,0,1),
+    
+    new = function(point1, point2, point3)
+        local new = setmetatable({}, plane)
+
+        new.points = {point1, point2, point3}
+
+        return new
+    end
 }
